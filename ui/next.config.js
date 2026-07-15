@@ -3,14 +3,15 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   async rewrites() {
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://cloudshare-brf3.onrender.com';
     return [
       {
         source: '/api/upload',
-        destination: 'http://localhost:8080/upload',
+        destination: `${backendUrl}/upload`,
       },
       {
         source: '/api/download/:port',
-        destination: 'http://localhost:8080/download/:port',
+        destination: `${backendUrl}/download/:port`,
       },
     ];
   },
