@@ -1,0 +1,97 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 255, 255, 255;
+  --background-start-rgb: 10, 10, 18;
+  --background-end-rgb: 3, 3, 5;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: radial-gradient(at center bottom, rgb(15, 12, 30), rgb(3, 3, 5));
+  font-family: 'Outfit', sans-serif;
+  overflow-x: hidden;
+  min-height: 100-screen;
+}
+
+/* Glassmorphism panel base */
+.glass-panel {
+  background: rgba(17, 24, 39, 0.45);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  border-radius: 1rem;
+}
+
+.glass-panel-light {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Float animations for mesh gradient background */
+@keyframes float-1 {
+  0%, 100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  33% {
+    transform: translate(30px, -50px) scale(1.15);
+  }
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+}
+
+@keyframes float-2 {
+  0%, 100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  50% {
+    transform: translate(-40px, 40px) scale(1.2);
+  }
+}
+
+@keyframes float-3 {
+  0%, 100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  40% {
+    transform: translate(40px, 20px) scale(0.85);
+  }
+  80% {
+    transform: translate(-20px, -40px) scale(1.1);
+  }
+}
+
+.animate-blob-1 {
+  animation: float-1 18s ease-in-out infinite;
+}
+
+.animate-blob-2 {
+  animation: float-2 22s ease-in-out infinite;
+}
+
+.animate-blob-3 {
+  animation: float-3 15s ease-in-out infinite;
+}
+
+/* Custom UI styling helpers */
+@layer components {
+  .btn-primary {
+    @apply px-5 py-3 bg-gradient-to-r from-blue-600 to-violet-600 text-white font-medium rounded-lg hover:from-blue-500 hover:to-violet-500 transition-all duration-300 shadow-lg hover:shadow-blue-500/20 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none;
+  }
+  
+  .btn-secondary {
+    @apply px-5 py-3 bg-white/5 hover:bg-white/10 text-white font-medium rounded-lg border border-white/10 transition-all duration-300 disabled:opacity-50 disabled:pointer-events-none;
+  }
+  
+  .input-field {
+    @apply w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all duration-300 font-medium;
+  }
+}
