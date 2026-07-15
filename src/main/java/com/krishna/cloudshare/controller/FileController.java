@@ -205,56 +205,45 @@ public class FileController {
             
             try {
                 int port = Integer.parseInt(portStr);
+                String filePath = fileSharer.getFilePath(port);
                 
-                try (Socket socket = new Socket("localhost", port);
-                     InputStream socketInput = socket.getInputStream()) {
-                    
-                    File tempFile = File.createTempFile("download-", ".tmp");
-                    String filename = "downloaded-file"; // Default filename
-                    
-                    try (FileOutputStream fos = new FileOutputStream(tempFile)) {
-                        byte[] buffer = new byte[4096];
-                        int bytesRead;
-                        
-                        ByteArrayOutputStream headerBaos = new ByteArrayOutputStream();
-                        int b;
-                        while ((b = socketInput.read()) != -1) {
-                            if (b == '\n') break;
-                            headerBaos.write(b);
-                        }
-                        
-                        String header = headerBaos.toString().trim();
-                        if (header.startsWith("Filename: ")) {
-                            filename = header.substring("Filename: ".length());
-                        }
-                        
-                        while ((bytesRead = socketInput.read(buffer)) != -1) {
-                            fos.write(buffer, 0, bytesRead);
-                        }
-                    }
-                    
-                    headers.add("Content-Disposition", "attachment; filename=\"" + filename + "\"");
-                    headers.add("Content-Type", "application/octet-stream");
-                    
-                    exchange.sendResponseHeaders(200, tempFile.length());
-                    try (OutputStream os = exchange.getResponseBody();
-                         FileInputStream fis = new FileInputStream(tempFile)) {
-                        byte[] buffer = new byte[4096];
-                        int bytesRead;
-                        while ((bytesRead = fis.read(buffer)) != -1) {
-                            os.write(buffer, 0, bytesRead);
-                        }
-                    }
-                    
-                    tempFile.delete();
-                    
-                } catch (IOException e) {
-                    System.err.println("Error downloading file from peer: " + e.getMessage());
-                    String response = "Error downloading file: " + e.getMessage();
+                if (filePath == null) {
+                    String response = "Not Found: File expired or code invalid";
                     headers.add("Content-Type", "text/plain");
-                    exchange.sendResponseHeaders(500, response.getBytes().length);
+                    exchange.sendResponseHeaders(404, response.getBytes().length);
                     try (OutputStream os = exchange.getResponseBody()) {
                         os.write(response.getBytes());
+                    }
+                    return;
+                }
+                
+                File file = new File(filePath);
+                if (!file.exists()) {
+                    String response = "Not Found: File no longer exists on server";
+                    headers.add("Content-Type", "text/plain");
+                    exchange.sendResponseHeaders(404, response.getBytes().length);
+                    try (OutputStream os = exchange.getResponseBody()) {
+                        os.write(response.getBytes());
+                    }
+                    return;
+                }
+                
+                // Extract original filename by stripping the UUID prefix
+                String filename = file.getName();
+                if (filename.contains("_")) {
+                    filename = filename.substring(filename.indexOf('_') + 1);
+                }
+                
+                headers.add("Content-Disposition", "attachment; filename=\"" + filename + "\"");
+                headers.add("Content-Type", "application/octet-stream");
+                
+                exchange.sendResponseHeaders(200, file.length());
+                try (OutputStream os = exchange.getResponseBody();
+                     FileInputStream fis = new FileInputStream(file)) {
+                    byte[] buffer = new byte[4096];
+                    int bytesRead;
+                    while ((bytesRead = fis.read(buffer)) != -1) {
+                        os.write(buffer, 0, bytesRead);
                     }
                 }
                 
