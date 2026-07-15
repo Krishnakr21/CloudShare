@@ -4,7 +4,7 @@ CloudShare is a peer-to-peer file sharing application that allows users to share
 
 ## Project Structure
 
-- `src/main/java/p2p`: Java backend code
+- `src/main/java/com/krishna/cloudshare`: Java backend code
   - `App.java`: Main application entry point
   - `controller/`: API controllers
   - `service/`: Business logic services
